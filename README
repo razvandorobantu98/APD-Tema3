@@ -1,0 +1,61 @@
+Dorobantu Razvan-Florin, 335CB
+
+===============================================================================
+Ideea implementarii:
+
+Retin valorile pixelilor in matrici. Pentru imaginile color folosesc 3 matrici 
+(matrix_R, matrix_G, matrix_B) iar pentru imaginile alb-negru folosesc o 
+singura matrice (matrix_BW).
+Am folosit alte matrici in care am retinut valorile nou calculate 
+(new_R, new_G, new_B, new_BW).
+
+Fiecare proces va aplica filtrul pe o portiune din imagine. De exemplu, daca 
+sunt 4 procese si imaginea are 100 linii, fiecare proces va lua cate 25 de 
+linii si va aplica filtrul.
+
+Pasii implementarii:
+
+1. Procesul 0 citeste imaginea si retine valorile pixelilor in matrici.
+2. Procesul 0 face Broadcast cu matricile, astfel fiecare proces va avea in 
+memorie imaginea originala
+3. Fiecare proces isi va calcula liniile corespunzatoare lui si va aplica 
+filtrul doar pentru acele linii.
+4. Fiecare proces va face broadcast doar cu liniile pe care le-a modificat. 
+Astfel, la sfarsit fiecare proces va avea imaginea complet modificata. 
+Daca trebuie aplicat un nou filtru, se reia de la pasul 3.
+6. Procesul 0 scrie in fisier imaginea modificata.
+
+===============================================================================
+Functionalitate:
+
+Programul aplica filtrele corect de fiecare data, indiferent de dimensiunea 
+imaginii sau de numarul de procese.
+
+Scalabilitate:
+
+Pentru scalabilitate am testat pe cele mai mari imagini (landscape.pnm si 
+rorschach.pgm), de cate 10 ori pentru fiecare numar de procese si am facut 
+media. Am testat pe maxim 6 procese pentru ca am 6 core-uri.
+
+Scalabilitatea nu este cea mai buna. De la 1 la 4 procese timpul de executie 
+scade (aproape ca se injumatateste). Insa, la 5 sau 6 procese obser ca timpul 
+de executie creste.
+
+landscape.pnm:
+
+1 proces:  5,942s
+2 procese: 3,997s
+3 procese: 3,424s
+4 procese: 3,246s
+5 procese: 3,258s
+6 procese: 3,341s
+
+rorschach.pgm:
+
+1 proces:  2,547s
+2 procese: 1,951s
+3 procese: 1,254s
+4 procese: 1,179s
+5 procese: 1,163s
+6 procese: 1,225s
+
